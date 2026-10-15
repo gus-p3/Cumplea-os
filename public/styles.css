@@ -1214,3 +1214,82 @@ body {
   background: rgba(255, 0, 128, 0.1);
 }
 
+/* ==========================================================================
+   MINI PODIO VISUAL EN CELULAR (INTERIM LEADERBOARD TRAS CADA PREGUNTA)
+   ========================================================================== */
+
+.mobile-podium-stage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 165px;
+  width: 100%;
+  margin: 0.5rem 0 1rem 0;
+}
+
+.mobile-podium-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.mobile-podium-col .avatar {
+  font-size: 1.8rem;
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+
+.mobile-podium-col .name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.85rem;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-podium-col .score {
+  font-size: 0.75rem;
+  color: #ffd700;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.mobile-podium-pillar {
+  width: 100%;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.35rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.m-pillar-1 {
+  height: 95px;
+  background: linear-gradient(180deg, #ffd700, #b8860b);
+  color: #3b2c00;
+  border-top: 2px solid #fff;
+}
+
+.m-pillar-2 {
+  height: 70px;
+  background: linear-gradient(180deg, #e0e0e0, #8a8a8a);
+  color: #2b2b2b;
+  border-top: 2px solid #fff;
+}
+
+.m-pillar-3 {
+  height: 50px;
+  background: linear-gradient(180deg, #cd7f32, #7a4616);
+  color: #fff;
+  border-top: 2px solid #fff;
+}
+
+

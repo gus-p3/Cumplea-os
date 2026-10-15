@@ -131,16 +131,21 @@
       </div>
     </section>
 
-    <!-- 7. LEADERBOARD INTERIM VIEW (TOP 5 EN EL CELULAR) -->
+    <!-- 7. LEADERBOARD INTERIM VIEW (PODIO + TOP 5 EN EL CELULAR) -->
     <section id="playerLeaderboardView" class="glass-card" style="display: none; padding: 1.5rem 1rem;">
-      <div style="text-align: center; margin-bottom: 1rem;">
-        <h2 style="font-family: var(--font-display); font-size: 1.8rem; color: #ffd700;">🏆 Top 5 del Momento</h2>
+      <div style="text-align: center; margin-bottom: 0.8rem;">
+        <h2 style="font-family: var(--font-display); font-size: 1.8rem; color: #ffd700;">🏆 Podio del Momento</h2>
         <p style="font-size: 0.95rem; color: var(--text-muted);">Los primeros 5 lugares van así:</p>
       </div>
 
-      <!-- Lista dinámica del Top 5 en el móvil -->
-      <div id="playerLeaderboardList" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
-        <!-- Elementos del Top 5 -->
+      <!-- Mini Podio visual Top 3 en el celular -->
+      <div id="playerMiniPodium" class="mobile-podium-stage">
+        <!-- 2do, 1ro, 3ro -->
+      </div>
+
+      <!-- Puestos 4 y 5 del Top 5 -->
+      <div id="playerTop5Remaining" style="display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem;">
+        <!-- Puestos 4 y 5 -->
       </div>
 
       <!-- Tu posición actual -->
@@ -154,6 +159,7 @@
         </div>
       </div>
     </section>
+
 
 
     <!-- 8. FINAL GAME OVER / PODIUM VIEW -->

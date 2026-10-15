@@ -229,22 +229,55 @@ socket.on('player:round_result', (data) => {
   }
 });
 
-// 5. LEADERBOARD INTERIM (TOP 5 EN EL CELULAR)
+// 5. LEADERBOARD INTERIM (PODIO VISUAL + TOP 5 EN EL CELULAR)
 socket.on('game:leaderboard', (data) => {
   switchPlayerView('leaderboard');
   window.soundEngine.fanfare();
 
-  // Renderizar la lista del Top 5 en el celular
-  const listEl = document.getElementById('playerLeaderboardList');
-  if (listEl) {
-    listEl.innerHTML = '';
-    const top5 = data.leaderboard || [];
+  const top5 = data.leaderboard || [];
 
-    top5.forEach((p, idx) => {
+  // 1. Renderizar Mini Podio Visual (Top 3)
+  const podiumEl = document.getElementById('playerMiniPodium');
+  if (podiumEl) {
+    podiumEl.innerHTML = '';
+    const top3 = [top5[1], top5[0], top5[2]]; // 2do, 1ro, 3ro
+    const ranks = [2, 1, 3];
+    const pillarClasses = ['m-pillar-2', 'm-pillar-1', 'm-pillar-3'];
+
+    top3.forEach((p, i) => {
+      const col = document.createElement('div');
+      col.className = 'mobile-podium-col';
+      if (p) {
+        const isMe = p.id === playerState.id || (p.name && p.name.toLowerCase() === playerState.name.toLowerCase());
+        col.innerHTML = `
+          <div class="avatar">${p.avatar || '🎉'}</div>
+          <div class="name" style="${isMe ? 'color: #00d2ff;' : ''}">${p.name}</div>
+          <div class="score">${p.score.toLocaleString()} pts</div>
+          <div class="mobile-podium-pillar ${pillarClasses[i]}">${ranks[i]}</div>
+        `;
+      } else {
+        col.innerHTML = `
+          <div class="avatar" style="opacity: 0.3;">👤</div>
+          <div class="name" style="opacity: 0.3;">-</div>
+          <div class="score" style="opacity: 0.3;">0</div>
+          <div class="mobile-podium-pillar ${pillarClasses[i]}">${ranks[i]}</div>
+        `;
+      }
+      podiumEl.appendChild(col);
+    });
+  }
+
+  // 2. Renderizar Puestos 4 y 5
+  const remainingEl = document.getElementById('playerTop5Remaining');
+  if (remainingEl) {
+    remainingEl.innerHTML = '';
+    const nextPlaces = top5.slice(3, 5); // 4to y 5to
+
+    nextPlaces.forEach(p => {
       const isMe = p.id === playerState.id || (p.name && p.name.toLowerCase() === playerState.name.toLowerCase());
       const row = document.createElement('div');
-      row.className = `leaderboard-item rank-${p.rank || idx + 1}`;
-      row.style.padding = '0.6rem 0.8rem';
+      row.className = `leaderboard-item rank-${p.rank || 4}`;
+      row.style.padding = '0.5rem 0.8rem';
       if (isMe) {
         row.style.border = '2px solid #00d2ff';
         row.style.background = 'rgba(0, 210, 255, 0.15)';
@@ -252,21 +285,21 @@ socket.on('game:leaderboard', (data) => {
 
       row.innerHTML = `
         <div class="player-info-side" style="gap: 0.6rem;">
-          <div class="rank-badge" style="width: 28px; height: 28px; font-size: 0.95rem;">${p.rank || idx + 1}</div>
-          <div style="font-size: 1.4rem;">${p.avatar || '🎉'}</div>
-          <div style="font-family: var(--font-display); font-weight: 700; font-size: 1rem; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            ${p.name} ${isMe ? '<span style="color:#00d2ff; font-size:0.8rem;">(Tú)</span>' : ''}
+          <div class="rank-badge" style="width: 26px; height: 26px; font-size: 0.9rem;">${p.rank}</div>
+          <div style="font-size: 1.3rem;">${p.avatar || '🎉'}</div>
+          <div style="font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            ${p.name} ${isMe ? '<span style="color:#00d2ff; font-size:0.75rem;">(Tú)</span>' : ''}
           </div>
         </div>
         <div class="player-score-side">
-          <div class="player-score" style="font-size: 1.15rem; color: #ffd700;">${p.score.toLocaleString()} pts</div>
+          <div class="player-score" style="font-size: 1.1rem; color: #ffd700;">${p.score.toLocaleString()} pts</div>
         </div>
       `;
-      listEl.appendChild(row);
+      remainingEl.appendChild(row);
     });
   }
 
-  // Posición del jugador en la partida
+  // 3. Posición personal del jugador
   const allPlayers = data.fullLeaderboard || data.leaderboard || [];
   const myIndex = allPlayers.findIndex(x => x.id === playerState.id || (x.name && x.name.toLowerCase() === playerState.name.toLowerCase()));
   const myRank = myIndex !== -1 ? (myIndex + 1) : '--';
@@ -281,6 +314,7 @@ socket.on('game:leaderboard', (data) => {
     myScoreEl.textContent = `${playerState.score.toLocaleString()} pts`;
   }
 });
+
 
 
 // 6. PODIUM / FIN
