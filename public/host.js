@@ -31,7 +31,7 @@ function switchView(viewName) {
   });
 }
 
-// Actualizar textos de cumpleañeros en la UI
+// Actualizar textos de cumpleañeros en la UI y código QR
 function updateCelebrantsUI() {
   const p1 = hostData.settings.celebrant1;
   const p2 = hostData.settings.celebrant2;
@@ -42,7 +42,15 @@ function updateCelebrantsUI() {
   document.getElementById('awardTitleP1').textContent = `Máster de ${p1}`;
   document.getElementById('awardTitleP2').textContent = `Máster de ${p2}`;
   document.getElementById('lobbyUrlDisplay').textContent = window.location.origin;
+
+  // Actualizar imagen del código QR con PIN pre-cargado
+  const inviteUrl = `${window.location.origin}/?pin=${hostData.settings.pin}`;
+  const qrImg = document.getElementById('lobbyQrImage');
+  if (qrImg) {
+    qrImg.src = `/api/qr?url=${encodeURIComponent(inviteUrl)}`;
+  }
 }
+
 
 // Renderizar jugadores en la sala
 function renderPlayersGrid(players) {

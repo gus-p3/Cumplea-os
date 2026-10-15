@@ -4,6 +4,8 @@ const http = require('http');
 const { Server } = require('socket.io');
 const fs = require('fs');
 const path = require('path');
+const QRCode = require('qrcode');
+
 
 
 const app = express();
@@ -540,8 +542,26 @@ function resetGame() {
   });
 }
 
+app.get('/api/qr', async (req, res) => {
+  try {
+    const targetUrl = req.query.url || `http://localhost:${PORT}/?pin=${gameData.settings.pin}`;
+    res.setHeader('Content-Type', 'image/png');
+    await QRCode.toFileStream(res, targetUrl, {
+      width: 320,
+      margin: 2,
+      color: {
+        dark: '#110d24',
+        light: '#ffffff'
+      }
+    });
+  } catch (err) {
+    res.status(500).send('Error generando código QR: ' + err.message);
+  }
+});
+
 // REST Endpoints
 app.get('/api/config', (req, res) => {
+
   res.json({
     celebrant1: gameData.settings.celebrant1,
     celebrant2: gameData.settings.celebrant2,
