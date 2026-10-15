@@ -229,11 +229,59 @@ socket.on('player:round_result', (data) => {
   }
 });
 
-// 5. LEADERBOARD INTERIM
+// 5. LEADERBOARD INTERIM (TOP 5 EN EL CELULAR)
 socket.on('game:leaderboard', (data) => {
   switchPlayerView('leaderboard');
-  document.getElementById('playerScoreInterim').textContent = playerState.score.toLocaleString();
+  window.soundEngine.fanfare();
+
+  // Renderizar la lista del Top 5 en el celular
+  const listEl = document.getElementById('playerLeaderboardList');
+  if (listEl) {
+    listEl.innerHTML = '';
+    const top5 = data.leaderboard || [];
+
+    top5.forEach((p, idx) => {
+      const isMe = p.id === playerState.id || (p.name && p.name.toLowerCase() === playerState.name.toLowerCase());
+      const row = document.createElement('div');
+      row.className = `leaderboard-item rank-${p.rank || idx + 1}`;
+      row.style.padding = '0.6rem 0.8rem';
+      if (isMe) {
+        row.style.border = '2px solid #00d2ff';
+        row.style.background = 'rgba(0, 210, 255, 0.15)';
+      }
+
+      row.innerHTML = `
+        <div class="player-info-side" style="gap: 0.6rem;">
+          <div class="rank-badge" style="width: 28px; height: 28px; font-size: 0.95rem;">${p.rank || idx + 1}</div>
+          <div style="font-size: 1.4rem;">${p.avatar || '🎉'}</div>
+          <div style="font-family: var(--font-display); font-weight: 700; font-size: 1rem; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            ${p.name} ${isMe ? '<span style="color:#00d2ff; font-size:0.8rem;">(Tú)</span>' : ''}
+          </div>
+        </div>
+        <div class="player-score-side">
+          <div class="player-score" style="font-size: 1.15rem; color: #ffd700;">${p.score.toLocaleString()} pts</div>
+        </div>
+      `;
+      listEl.appendChild(row);
+    });
+  }
+
+  // Posición del jugador en la partida
+  const allPlayers = data.fullLeaderboard || data.leaderboard || [];
+  const myIndex = allPlayers.findIndex(x => x.id === playerState.id || (x.name && x.name.toLowerCase() === playerState.name.toLowerCase()));
+  const myRank = myIndex !== -1 ? (myIndex + 1) : '--';
+
+  const myRankTextEl = document.getElementById('playerCurrentRankText');
+  if (myRankTextEl) {
+    myRankTextEl.textContent = `Lugar #${myRank}`;
+  }
+
+  const myScoreEl = document.getElementById('playerScoreInterim');
+  if (myScoreEl) {
+    myScoreEl.textContent = `${playerState.score.toLocaleString()} pts`;
+  }
 });
+
 
 // 6. PODIUM / FIN
 socket.on('game:podium', (data) => {

@@ -292,8 +292,18 @@ function calculatePoints(timeMs, timeLimitSeconds, isCorrect, currentStreak) {
   return basePoints + streakBonus;
 }
 
+function shuffleArray(arr) {
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 function sanitizeQuestionForPlayer(q) {
   if (!q) return null;
+  const total = (gameState.activeQuestions && gameState.activeQuestions.length) || gameData.questions.length;
   return {
     id: q.id,
     text: q.text,
@@ -303,7 +313,7 @@ function sanitizeQuestionForPlayer(q) {
     options: q.options,
     timeLimit: q.timeLimit || 20,
     index: gameState.currentQuestionIndex,
-    totalQuestions: gameData.questions.length
+    totalQuestions: total
   };
 }
 
@@ -357,8 +367,15 @@ function endCurrentQuestion() {
 
 function startQuestion(index) {
   stopTimer();
+
+  // Mezclar preguntas aleatoriamente al iniciar la partida (índice 0)
+  if (index === 0 || !gameState.activeQuestions || gameState.activeQuestions.length === 0) {
+    gameState.activeQuestions = shuffleArray(gameData.questions);
+    console.log(`[Juego] 🎲 Preguntas barajadas aleatoriamente (${gameState.activeQuestions.length} en total).`);
+  }
+
   gameState.currentQuestionIndex = index;
-  gameState.currentQuestion = gameData.questions[index];
+  gameState.currentQuestion = gameState.activeQuestions[index];
   gameState.answersCurrentRound.clear();
 
   if (!gameState.currentQuestion) {
@@ -366,11 +383,13 @@ function startQuestion(index) {
     return;
   }
 
+  const totalQuestions = gameState.activeQuestions.length;
+
   // 1. Mostrar pantalla INTRO (3 segundos de preparación "Pregunta X de Y...")
   gameState.status = 'INTRO';
   io.emit('game:intro', {
     index: index + 1,
-    total: gameData.questions.length,
+    total: totalQuestions,
     celebrant: gameState.currentQuestion.celebrant,
     celebrantName: gameState.currentQuestion.celebrant === 'p1' ? gameData.settings.celebrant1 :
                    gameState.currentQuestion.celebrant === 'p2' ? gameData.settings.celebrant2 : '¡Ambos Cumpleañeros!'
@@ -392,7 +411,7 @@ function startQuestion(index) {
       question: sanitized,
       timeLimit: totalSecs,
       index: index + 1,
-      total: gameData.questions.length
+      total: totalQuestions
     });
 
     // Iniciar temporizador regresivo de 1 segundo
@@ -416,14 +435,18 @@ function showLeaderboard() {
   stopTimer();
   gameState.status = 'LEADERBOARD';
   const leaderboard = getLeaderboard();
+  const totalQuestions = (gameState.activeQuestions && gameState.activeQuestions.length) || gameData.questions.length;
 
+  // Emitir el Top 5 a TODOS (Host y celulares de los participantes)
   io.emit('game:leaderboard', {
-    leaderboard: leaderboard.slice(0, 5), // Top 5 para pantalla grande
-    isLastQuestion: gameState.currentQuestionIndex >= gameData.questions.length - 1
+    leaderboard: leaderboard.slice(0, 5), // Top 5
+    fullLeaderboard: leaderboard, // Ranking completo
+    isLastQuestion: gameState.currentQuestionIndex >= totalQuestions - 1
   });
 
   updatePreviousRanks();
 }
+
 
 function finishGame() {
   stopTimer();

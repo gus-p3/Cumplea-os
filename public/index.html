@@ -131,14 +131,30 @@
       </div>
     </section>
 
-    <!-- 7. LEADERBOARD INTERIM VIEW -->
-    <section id="playerLeaderboardView" class="glass-card" style="display: none; text-align: center; margin: auto 0; padding: 2.5rem 1.5rem;">
-      <h2 style="font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 1rem;">🏆 Marcador</h2>
-      <p style="font-size: 1.2rem; margin-bottom: 1rem;">¡Mira la pantalla grande para ver quién va ganando!</p>
-      <div style="font-size: 1.1rem; color: #ffd700; font-weight: bold;">
-        Tu Puntaje: <span id="playerScoreInterim">0</span> pts
+    <!-- 7. LEADERBOARD INTERIM VIEW (TOP 5 EN EL CELULAR) -->
+    <section id="playerLeaderboardView" class="glass-card" style="display: none; padding: 1.5rem 1rem;">
+      <div style="text-align: center; margin-bottom: 1rem;">
+        <h2 style="font-family: var(--font-display); font-size: 1.8rem; color: #ffd700;">🏆 Top 5 del Momento</h2>
+        <p style="font-size: 0.95rem; color: var(--text-muted);">Los primeros 5 lugares van así:</p>
+      </div>
+
+      <!-- Lista dinámica del Top 5 en el móvil -->
+      <div id="playerLeaderboardList" style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+        <!-- Elementos del Top 5 -->
+      </div>
+
+      <!-- Tu posición actual -->
+      <div id="playerPersonalRankCard" style="background: rgba(255, 255, 255, 0.12); border: 2px solid #ffd700; border-radius: 16px; padding: 0.8rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="text-align: left;">
+          <div style="font-size: 0.8rem; color: #ffd700; font-weight: bold; text-transform: uppercase;">Tu posición actual</div>
+          <div id="playerCurrentRankText" style="font-family: var(--font-display); font-weight: 800; font-size: 1.2rem;">Lugar #--</div>
+        </div>
+        <div id="playerScoreInterim" style="font-family: var(--font-display); font-weight: 900; font-size: 1.4rem; color: #ffd700;">
+          0 pts
+        </div>
       </div>
     </section>
+
 
     <!-- 8. FINAL GAME OVER / PODIUM VIEW -->
     <section id="playerGameOverView" class="glass-card" style="display: none; text-align: center; margin: auto 0; padding: 2rem 1.2rem;">
