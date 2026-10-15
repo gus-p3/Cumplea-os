@@ -254,17 +254,40 @@ socket.on('game:leaderboard', (data) => {
   });
 });
 
-// 6. PODIUM
-socket.on('game:podium', (data) => {
-  switchView('podium');
-  window.soundEngine.fanfare();
-  window.confetti.fire(160);
+// 6. PODIUM CON 3 TABLEROS DINÁMICOS
+let podiumResults = null;
 
+function renderPodiumTab(tabKey) {
+  if (!podiumResults) return;
+
+  const tabButtons = {
+    general: document.getElementById('btnTabGeneral'),
+    gustavo: document.getElementById('btnTabGustavo'),
+    lizeth: document.getElementById('btnTabLizeth')
+  };
+
+  Object.keys(tabButtons).forEach(k => {
+    if (tabButtons[k]) {
+      tabButtons[k].classList.toggle('active', k === tabKey);
+    }
+  });
+
+  const categoryData = podiumResults[tabKey] || { top3: [], leaderboard: [], title: 'Resultados' };
+
+  // Título y subtítulo
+  document.getElementById('podiumMainTitle').textContent = categoryData.title;
+  document.getElementById('podiumSubTitle').textContent = 
+    tabKey === 'general' ? '👑 Quien contestó más preguntas y acumuló más puntos en total:' :
+    tabKey === 'gustavo' ? `💙 Los invitados que más conocen a ${hostData.settings.celebrant1}:` :
+    `💖 Las personas que más conocen a ${hostData.settings.celebrant2}:`;
+
+  document.getElementById('podiumCategoryTableTitle').textContent = `Ranking Completo - ${categoryData.title}`;
+
+  // Renderizar Podio 3D
   const stage = document.getElementById('podiumStage');
   stage.innerHTML = '';
+  const top3 = categoryData.top3 || [];
 
-  const top3 = data.podium;
-  // Orden visual del podio: 2do (izquierda), 1ro (centro), 3ro (derecha)
   const order = [
     { p: top3[1], rank: 2, pillarClass: 'pillar-2' },
     { p: top3[0], rank: 1, pillarClass: 'pillar-1' },
@@ -280,7 +303,7 @@ socket.on('game:podium', (data) => {
       col.innerHTML = `
         <div class="podium-avatar">${p.avatar || '🎉'}</div>
         <div class="podium-player-name">${p.name}</div>
-        <div class="podium-player-score">${p.score.toLocaleString()} pts</div>
+        <div class="podium-player-score">${(p.displayScore ?? p.score ?? 0).toLocaleString()} pts</div>
         <div class="podium-pillar ${item.pillarClass}">${item.rank}</div>
       `;
     } else {
@@ -294,20 +317,65 @@ socket.on('game:podium', (data) => {
     stage.appendChild(col);
   });
 
-  // Premios especiales
-  if (data.awards) {
-    if (data.awards.masterP1 && data.awards.masterP1.player) {
-      document.getElementById('awardWinnerP1').textContent = `${data.awards.masterP1.player.avatar || ''} ${data.awards.masterP1.player.name} (${data.awards.masterP1.player.score.toLocaleString()} pts)`;
-    }
-    if (data.awards.masterP2 && data.awards.masterP2.player) {
-      document.getElementById('awardWinnerP2').textContent = `${data.awards.masterP2.player.avatar || ''} ${data.awards.masterP2.player.name} (${data.awards.masterP2.player.score.toLocaleString()} pts)`;
-    }
-  }
+  // Renderizar Lista de posiciones de este tablero
+  const list = document.getElementById('podiumCategoryRankingList');
+  list.innerHTML = '';
+  const fullList = categoryData.leaderboard || [];
 
-  // Lanzar más confeti en intervalos
-  setTimeout(() => window.confetti.fire(120), 1500);
-  setTimeout(() => window.confetti.fire(120), 3000);
+  if (fullList.length === 0) {
+    list.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 1rem;">Sin respuestas en esta categoría.</div>';
+  } else {
+    fullList.forEach(p => {
+      const row = document.createElement('div');
+      row.className = `leaderboard-item rank-${p.rank}`;
+      row.style.padding = '0.7rem 1.2rem';
+      row.innerHTML = `
+        <div class="player-info-side">
+          <div class="rank-badge" style="width: 34px; height: 34px; font-size: 1.1rem;">${p.rank}</div>
+          <div style="font-size: 1.6rem;">${p.avatar || '🎉'}</div>
+          <div style="font-family: var(--font-display); font-weight: 700; font-size: 1.15rem;">${p.name}</div>
+        </div>
+        <div class="player-score-side">
+          <div class="player-score" style="font-size: 1.3rem;">${(p.displayScore ?? p.score ?? 0).toLocaleString()} pts</div>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  }
+}
+
+socket.on('game:podium', (data) => {
+  switchView('podium');
+  podiumResults = data;
+  window.soundEngine.fanfare();
+  window.confetti.fire(160);
+
+  // Iniciar mostrando el Tablero General
+  renderPodiumTab('general');
+
+  setTimeout(() => window.confetti.fire(100), 1200);
+  setTimeout(() => window.confetti.fire(100), 2500);
 });
+
+// Event listeners para los 3 tableros
+document.getElementById('btnTabGeneral').addEventListener('click', () => {
+  window.soundEngine.click();
+  window.confetti.fire(60);
+  renderPodiumTab('general');
+});
+
+document.getElementById('btnTabGustavo').addEventListener('click', () => {
+  window.soundEngine.click();
+  window.confetti.fire(60);
+  renderPodiumTab('gustavo');
+});
+
+document.getElementById('btnTabLizeth').addEventListener('click', () => {
+  window.soundEngine.click();
+  window.confetti.fire(60);
+  renderPodiumTab('lizeth');
+});
+
 
 // 7. RESET
 socket.on('game:reset', (data) => {

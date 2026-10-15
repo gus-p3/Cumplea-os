@@ -238,9 +238,27 @@ socket.on('game:leaderboard', (data) => {
 // 6. PODIUM / FIN
 socket.on('game:podium', (data) => {
   switchPlayerView('gameOver');
-  document.getElementById('playerFinalPoints').textContent = `${playerState.score.toLocaleString()} pts`;
   window.soundEngine.fanfare();
   window.confetti.fire(80);
+});
+
+// Estadísticas individuales de los 3 tableros
+socket.on('player:final_stats', (stats) => {
+  const genRankEl = document.getElementById('statGenRank');
+  const genScoreEl = document.getElementById('statGenScore');
+  const p1RankEl = document.getElementById('statP1Rank');
+  const p1ScoreEl = document.getElementById('statP1Score');
+  const p2RankEl = document.getElementById('statP2Rank');
+  const p2ScoreEl = document.getElementById('statP2Score');
+
+  if (genRankEl) genRankEl.textContent = `Lugar #${stats.genRank}`;
+  if (genScoreEl) genScoreEl.textContent = `${(stats.totalScore || 0).toLocaleString()} pts`;
+
+  if (p1RankEl) p1RankEl.textContent = `Lugar #${stats.p1Rank}`;
+  if (p1ScoreEl) p1ScoreEl.textContent = `${(stats.p1Score || 0).toLocaleString()} pts`;
+
+  if (p2RankEl) p2RankEl.textContent = `Lugar #${stats.p2Rank}`;
+  if (p2ScoreEl) p2ScoreEl.textContent = `${(stats.p2Score || 0).toLocaleString()} pts`;
 });
 
 // 7. RESET
@@ -250,3 +268,4 @@ socket.on('game:reset', (data) => {
   playerState.hasAnsweredThisRound = false;
   switchPlayerView('waiting');
 });
+

@@ -1041,4 +1041,122 @@ body {
   .podium-stage {
     gap: 0.5rem;
   }
+  .podium-tabs-nav {
+    flex-direction: column;
+  }
 }
+
+/* ==========================================================================
+   ESTILOS DE LOS 3 TABLEROS DE RESULTADOS FINALES (GENERAL, GUSTAVO, LIZETH)
+   ========================================================================== */
+
+.podium-tabs-nav {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 1.5rem 0 2rem 0;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.5rem;
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  flex-wrap: wrap;
+}
+
+.podium-tab-btn {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 800;
+  padding: 0.75rem 1.6rem;
+  border-radius: 30px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.podium-tab-btn:hover {
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.podium-tab-btn.active.tab-general {
+  background: linear-gradient(135deg, #ffd700, #ff8800);
+  color: #111;
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.5);
+}
+
+.podium-tab-btn.active.tab-gustavo {
+  background: linear-gradient(135deg, #00d2ff, #0051ff);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(0, 210, 255, 0.6);
+}
+
+.podium-tab-btn.active.tab-lizeth {
+  background: linear-gradient(135deg, #ff0080, #7928ca);
+  color: #fff;
+  box-shadow: 0 4px 20px rgba(255, 0, 128, 0.6);
+}
+
+.podium-header-banner {
+  text-align: center;
+  margin-bottom: 1rem;
+  animation: scaleUp 0.4s ease;
+}
+
+.podium-subtitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-top: 0.3rem;
+}
+
+/* Animación de subida de los pilares */
+.podium-pillar {
+  animation: riseUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: bottom;
+}
+
+@keyframes riseUp {
+  0% { transform: scaleY(0); opacity: 0; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+
+/* Tarjetas de ranking en el podio */
+.podium-rank-table-card {
+  width: 100%;
+  max-width: 750px;
+  margin-top: 1.5rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 1.2rem;
+}
+
+/* Mobile individual stat badges */
+.player-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+.player-stat-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.player-stat-badge.badge-gustavo {
+  border-color: #00d2ff;
+  background: rgba(0, 210, 255, 0.1);
+}
+.player-stat-badge.badge-lizeth {
+  border-color: #ff0080;
+  background: rgba(255, 0, 128, 0.1);
+}
+

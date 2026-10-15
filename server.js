@@ -428,35 +428,67 @@ function finishGame() {
   gameState.status = 'PODIUM';
 
   const fullLeaderboard = getLeaderboard();
-  const top3 = fullLeaderboard.slice(0, 3);
 
-  // Calcular quién conoce más a cada cumpleañero
-  let maxP1 = { name: 'Nadie', score: -1, avatar: '✨' };
-  let maxP2 = { name: 'Nadie', score: -1, avatar: '✨' };
+  // 1. Tablero General (Suma total)
+  const generalLeaderboard = [...fullLeaderboard].sort((a, b) => b.score - a.score).map((p, i) => ({
+    ...p,
+    rank: i + 1,
+    displayScore: p.score
+  }));
 
-  fullLeaderboard.forEach(p => {
-    if (p.scoresByCelebrant.p1 > maxP1.score) {
-      maxP1 = { name: p.name, score: p.scoresByCelebrant.p1, avatar: p.avatar };
-    }
-    if (p.scoresByCelebrant.p2 > maxP2.score) {
-      maxP2 = { name: p.name, score: p.scoresByCelebrant.p2, avatar: p.avatar };
-    }
-  });
+  // 2. Tablero de Gustavo
+  const p1Leaderboard = [...fullLeaderboard].sort((a, b) => (b.scoresByCelebrant.p1 || 0) - (a.scoresByCelebrant.p1 || 0)).map((p, i) => ({
+    ...p,
+    rank: i + 1,
+    displayScore: p.scoresByCelebrant.p1 || 0
+  }));
 
+  // 3. Tablero de Lizeth
+  const p2Leaderboard = [...fullLeaderboard].sort((a, b) => (b.scoresByCelebrant.p2 || 0) - (a.scoresByCelebrant.p2 || 0)).map((p, i) => ({
+    ...p,
+    rank: i + 1,
+    displayScore: p.scoresByCelebrant.p2 || 0
+  }));
+
+  // Enviar los 3 tableros al Host y a todos
   io.emit('game:podium', {
-    podium: top3,
-    fullLeaderboard,
-    awards: {
-      masterP1: {
-        title: `Experto/a en ${gameData.settings.celebrant1}`,
-        player: maxP1
-      },
-      masterP2: {
-        title: `Experto/a en ${gameData.settings.celebrant2}`,
-        player: maxP2
-      }
+    general: {
+      title: '🏆 Tablero General: Quien contestó más',
+      top3: generalLeaderboard.slice(0, 3),
+      leaderboard: generalLeaderboard
+    },
+    gustavo: {
+      title: `💙 Tablero: Quien conoce más a ${gameData.settings.celebrant1}`,
+      celebrantName: gameData.settings.celebrant1,
+      top3: p1Leaderboard.slice(0, 3),
+      leaderboard: p1Leaderboard
+    },
+    lizeth: {
+      title: `💖 Tablero: Quien conoce más a ${gameData.settings.celebrant2}`,
+      celebrantName: gameData.settings.celebrant2,
+      top3: p2Leaderboard.slice(0, 3),
+      leaderboard: p2Leaderboard
     }
   });
+
+  // Enviar estadísticas personalizadas a cada celular
+  gameState.players.forEach((player, socketId) => {
+    const genRank = generalLeaderboard.findIndex(x => x.id === player.id) + 1;
+    const p1Rank = p1Leaderboard.findIndex(x => x.id === player.id) + 1;
+    const p2Rank = p2Leaderboard.findIndex(x => x.id === player.id) + 1;
+
+    io.to(socketId).emit('player:final_stats', {
+      totalScore: player.score,
+      genRank,
+      p1Rank,
+      p1Score: player.scoresByCelebrant.p1 || 0,
+      p2Rank,
+      p2Score: player.scoresByCelebrant.p2 || 0,
+      celebrant1: gameData.settings.celebrant1,
+      celebrant2: gameData.settings.celebrant2
+    });
+  });
+
 
   // Guardar partida terminada en la base de datos de MongoDB
   if (isMongoConnected && fullLeaderboard.length > 0) {

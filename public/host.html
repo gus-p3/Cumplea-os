@@ -148,38 +148,49 @@
       </div>
     </section>
 
-    <!-- 6. FINAL PODIUM VIEW -->
+    <!-- 6. FINAL PODIUM VIEW CON 3 TABLEROS -->
     <section id="viewPodium" class="podium-section glass-card" style="display: none;">
-      <h1 class="leaderboard-title" style="font-size: 3rem;">🎉 ¡PODIO DE LA FIESTA! 🎉</h1>
-      <p style="color: var(--text-muted); font-size: 1.2rem;">Los que más conocen a los cumpleañeros:</p>
-
-      <div class="podium-stage" id="podiumStage">
-        <!-- Columnas 2do, 1er, 3er lugar -->
+      <div class="podium-header-banner">
+        <h1 class="leaderboard-title" id="podiumMainTitle" style="font-size: 2.8rem;">🎉 ¡RESULTADOS FINALES! 🎉</h1>
+        <p class="podium-subtitle" id="podiumSubTitle" style="color: var(--text-muted);">
+          Selecciona un tablero para ver a los ganadores:
+        </p>
       </div>
 
-      <!-- Premios especiales por cumpleañero -->
-      <div class="special-awards-grid" id="specialAwardsGrid">
-        <div class="award-card award-p1">
-          <div class="award-icon">👑</div>
-          <div>
-            <div class="award-title" id="awardTitleP1">Máster de Cumpleañero 1</div>
-            <div class="award-winner" id="awardWinnerP1">Cargando...</div>
-          </div>
-        </div>
-        <div class="award-card award-p2">
-          <div class="award-icon">👑</div>
-          <div>
-            <div class="award-title" id="awardTitleP2">Máster de Cumpleañero 2</div>
-            <div class="award-winner" id="awardWinnerP2">Cargando...</div>
-          </div>
+      <!-- Selector de 3 Tableros -->
+      <div class="podium-tabs-nav">
+        <button id="btnTabGeneral" class="podium-tab-btn active tab-general">
+          🏆 1. General (Quien contestó más)
+        </button>
+        <button id="btnTabGustavo" class="podium-tab-btn tab-gustavo">
+          💙 2. Quien conoce más a Gustavo
+        </button>
+        <button id="btnTabLizeth" class="podium-tab-btn tab-lizeth">
+          💖 3. Quien conoce más a Lizeth
+        </button>
+      </div>
+
+      <!-- Podio 3D de la categoría activa -->
+      <div class="podium-stage" id="podiumStage">
+        <!-- Columnas 2do, 1er, 3er lugar animadas -->
+      </div>
+
+      <!-- Tabla de posiciones de la categoría activa -->
+      <div class="podium-rank-table-card">
+        <h3 id="podiumCategoryTableTitle" style="margin-bottom: 0.8rem; font-family: var(--font-display); text-align: center; color: #ffd700;">
+          Ranking del Tablero
+        </h3>
+        <div id="podiumCategoryRankingList" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 240px; overflow-y: auto;">
+          <!-- Items del ranking -->
         </div>
       </div>
 
       <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
-        <button id="btnPodiumViewScores" class="btn btn-secondary">📋 Ver Tabla Detallada de Todos</button>
-        <button id="btnRestartGame" class="btn btn-primary">🔄 Reiniciar Trivia</button>
+        <button id="btnPodiumViewScores" class="btn btn-secondary">📊 Ver Tabla Detallada y Descargar CSV</button>
+        <button id="btnRestartGame" class="btn btn-primary">🔄 Jugar Otra Partida</button>
       </div>
     </section>
+
   </div>
 
   <!-- MODAL: PREGUNTAS Y CONFIGURACIÓN -->

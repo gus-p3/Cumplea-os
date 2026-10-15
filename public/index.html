@@ -141,17 +141,47 @@
     </section>
 
     <!-- 8. FINAL GAME OVER / PODIUM VIEW -->
-    <section id="playerGameOverView" class="glass-card" style="display: none; text-align: center; margin: auto 0; padding: 2.5rem 1.5rem;">
-      <div style="font-size: 4rem;">🎉</div>
-      <h2 style="font-family: var(--font-display); font-size: 2.2rem; margin-bottom: 0.5rem;">¡Juego Terminado!</h2>
-      <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 1.5rem;">
-        ¡Gracias por celebrar el cumpleaños con nosotros!
+    <section id="playerGameOverView" class="glass-card" style="display: none; text-align: center; margin: auto 0; padding: 2rem 1.2rem;">
+      <div style="font-size: 3.5rem;">🎉</div>
+      <h2 style="font-family: var(--font-display); font-size: 2rem; margin-bottom: 0.3rem;">¡Juego Terminado!</h2>
+      <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 1.2rem;">
+        ¡Tus resultados en los 3 tableros de la fiesta!
       </p>
-      <div id="playerFinalScoreCard" style="background: rgba(255,255,255,0.1); border-radius: 18px; padding: 1.5rem;">
-        <div style="font-size: 1rem; color: var(--text-muted);">Tu resultado final:</div>
-        <div id="playerFinalPoints" style="font-size: 2.5rem; font-weight: 900; color: #ffd700; font-family: var(--font-display);">
-          0 pts
+
+      <div class="player-stat-grid">
+        <div class="player-stat-badge" style="border-color: #ffd700; background: rgba(255, 215, 0, 0.12);">
+          <div style="text-align: left;">
+            <div style="font-size: 0.85rem; color: #ffd700; font-weight: bold; text-transform: uppercase;">🏆 Tablero General</div>
+            <div id="statGenRank" style="font-family: var(--font-display); font-size: 1.3rem; font-weight: 800;">Lugar #--</div>
+          </div>
+          <div id="statGenScore" style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; color: #ffd700;">
+            0 pts
+          </div>
         </div>
+
+        <div class="player-stat-badge badge-gustavo">
+          <div style="text-align: left;">
+            <div style="font-size: 0.85rem; color: #00d2ff; font-weight: bold; text-transform: uppercase;">💙 Con Gustavo</div>
+            <div id="statP1Rank" style="font-family: var(--font-display); font-size: 1.3rem; font-weight: 800;">Lugar #--</div>
+          </div>
+          <div id="statP1Score" style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; color: #00d2ff;">
+            0 pts
+          </div>
+        </div>
+
+        <div class="player-stat-badge badge-lizeth">
+          <div style="text-align: left;">
+            <div style="font-size: 0.85rem; color: #ff0080; font-weight: bold; text-transform: uppercase;">💖 Con Lizeth</div>
+            <div id="statP2Rank" style="font-family: var(--font-display); font-size: 1.3rem; font-weight: 800;">Lugar #--</div>
+          </div>
+          <div id="statP2Score" style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; color: #ff0080;">
+            0 pts
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.2rem; font-size: 0.95rem; color: var(--text-muted);">
+        👀 ¡Mira la pantalla principal para la entrega de premios!
       </div>
     </section>
   </div>
