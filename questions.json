@@ -1,0 +1,140 @@
+{
+  "settings": {
+    "celebrant1": "Cumpleañero/a 1",
+    "celebrant2": "Cumpleañero/a 2",
+    "pin": "2026",
+    "adminPassword": "admin"
+  },
+  "questions": [
+    {
+      "id": "q1",
+      "text": "¿Quién de los dos es más probable que llegue tarde a su propia fiesta?",
+      "celebrant": "both",
+      "timeLimit": 20,
+      "options": [
+        "Cumpleañero/a 1 sin duda",
+        "Cumpleañero/a 2 siempre",
+        "Ambos llegan tarde juntos",
+        "Ninguno, son ultra puntuales"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "q2",
+      "text": "¿Cuál es la comida o antojito favorito que Cumpleañero/a 1 nunca rechaza?",
+      "celebrant": "p1",
+      "timeLimit": 20,
+      "options": [
+        "Pizza con extra queso",
+        "Tacos al pastor / Asada",
+        "Hamburguesas artesanales",
+        "Sushi y comida asiática"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "q3",
+      "text": "¿Cuál es el talento oculto o pasatiempo secreto de Cumpleañero/a 2?",
+      "celebrant": "p2",
+      "timeLimit": 20,
+      "options": [
+        "Canta con sentimiento en la regadera",
+        "Es un pro en videojuegos",
+        "Bailarín/a estrella en las fiestas",
+        "Chef de medianoche"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "q4",
+      "text": "Si Cumpleañero/a 1 pudiera viajar a cualquier lugar mañana, ¿a dónde iría?",
+      "celebrant": "p1",
+      "timeLimit": 20,
+      "options": [
+        "A una playa paradisíaca con cócteles",
+        "A mochilear por Europa o Japón",
+        "A una cabaña en el bosque / montaña",
+        "Al parque temático de Disney"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "q5",
+      "text": "¿Qué bebida o trago pide siempre Cumpleañero/a 2 para brindar?",
+      "celebrant": "p2",
+      "timeLimit": 20,
+      "options": [
+        "Cerveza bien fría",
+        "Tequila o Mezcal con limón",
+        "Cóctel dulce (Mojito / Piña Colada)",
+        "Refresco o agua con gas"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "q6",
+      "text": "¿Quién de los dos es el más dramático cuando le da una simple gripa?",
+      "celebrant": "both",
+      "timeLimit": 20,
+      "options": [
+        "Cumpleañero/a 1 (hace testamento)",
+        "Cumpleañero/a 2 (parece agonizar)",
+        "Los dos por igual",
+        "Ninguno, son de acero"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "q7",
+      "text": "¿Cuál es la frase típica o muletilla que Cumpleañero/a 1 repite todo el tiempo?",
+      "celebrant": "p1",
+      "timeLimit": 20,
+      "options": [
+        "\"¿Qué onda? / ¿Qué show?\"",
+        "\"Te lo juro por mi vida\"",
+        "\"Literal...\"",
+        "\"¡Ya no voy a gastar más!\""
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "q8",
+      "text": "¿A qué le tiene más fobia o pavor secreto Cumpleañero/a 2?",
+      "celebrant": "p2",
+      "timeLimit": 20,
+      "options": [
+        "A las cucarachas voladoras",
+        "A las películas de terror",
+        "A quedarse sin batería ni cargador",
+        "A las alturas"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "q9",
+      "text": "¿Qué canción pone a bailar o cantar a grito herido a ambos cumpleañeros?",
+      "celebrant": "both",
+      "timeLimit": 20,
+      "options": [
+        "Un clásico de Reggaetón viejito",
+        "Cumbia / Salsa fiestera",
+        "Pop 2000s en español",
+        "Rock o electrónica a todo volumen"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "q10",
+      "text": "¿Quién es el verdadero consentido de la fiesta hoy?",
+      "celebrant": "both",
+      "timeLimit": 15,
+      "options": [
+        "Cumpleañero/a 1",
+        "Cumpleañero/a 2",
+        "¡Ambos por igual!",
+        "El que traiga el mejor regalo"
+      ],
+      "correctIndex": 2
+    }
+  ]
+}

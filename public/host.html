@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pantalla Host | Trivia Cumpleaños</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <!-- Ambient glow background -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="container">
+    <!-- Top Bar -->
+    <header class="app-header">
+      <div class="brand-logo">
+        <span class="logo-badge">🎂 KAHOOT!</span>
+        <span id="headerCelebrantsText">Cumpleaños Doble</span>
+      </div>
+      <div class="nav-actions">
+        <button id="btnSoundToggle" class="btn btn-icon" title="Silenciar / Activar Sonido">🔊</button>
+        <button id="btnTopRestart" class="btn btn-secondary" title="Reiniciar partida a 0">🔄 Reiniciar</button>
+        <button id="btnOpenScoresModal" class="btn btn-secondary">📊 Tabla de Puntajes</button>
+        <button id="btnOpenSettings" class="btn btn-secondary">⚙️ Preguntas & Config</button>
+      </div>
+    </header>
+
+    <!-- 1. LOBBY VIEW -->
+    <section id="viewLobby" class="host-lobby glass-card">
+      <div class="pin-display-box">
+        <div class="pin-label">Entra a jugar con el código PIN:</div>
+        <div class="pin-number" id="displayPin">----</div>
+        <div class="lobby-instruction">
+          Conéctense desde el celular a: <strong id="lobbyUrlDisplay">esta web</strong>
+        </div>
+        <button id="btnCopyInviteLink" class="btn btn-secondary" style="margin-top: 1rem; font-size: 0.95rem;">
+          📋 Copiar Enlace Directo (WhatsApp)
+        </button>
+      </div>
+
+      <div class="players-section">
+        <div class="players-header">
+          <h2>Invitados en la sala</h2>
+          <span class="players-count-badge" id="playersCountBadge">0 conectados</span>
+        </div>
+        <div class="players-grid" id="playersGrid">
+          <!-- Chips de jugadores que se van uniendo -->
+        </div>
+      </div>
+
+      <div class="lobby-actions">
+        <button id="btnStartGame" class="btn btn-primary" style="font-size: 1.4rem; padding: 1rem 2.5rem;">
+          🚀 ¡EMPEZAR FIESTA!
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. INTRO VIEW (Cuenta regresiva 3, 2, 1) -->
+    <section id="viewIntro" class="glass-card" style="display: none; text-align: center; margin: auto 0; padding: 4rem 2rem;">
+      <div id="introCategoryBadge" class="celebrant-badge badge-both" style="margin-bottom: 1.5rem; font-size: 1.2rem;">
+        ¿Quién conoce más a...?
+      </div>
+      <h2 id="introQuestionTitle" style="font-size: 3rem; font-family: var(--font-display); margin-bottom: 1rem;">
+        Pregunta 1 de 10
+      </h2>
+      <p style="font-size: 1.5rem; color: var(--text-muted);">¡Prepárense para responder rápido!</p>
+    </section>
+
+    <!-- 3. QUESTION VIEW -->
+    <section id="viewQuestion" class="question-stage" style="display: none;">
+      <div class="question-top-bar">
+        <div class="question-number-pill" id="questionCounterPill">Pregunta 1/10</div>
+        <div id="questionCelebrantBadge" class="celebrant-badge badge-p1">Para: Cumpleañero 1</div>
+        <div class="timer-container">
+          <div class="timer-circle" id="timerCircle">20</div>
+        </div>
+        <div class="answers-counter-pill" id="answersCounterPill">0 / 0 respondieron</div>
+      </div>
+
+      <div class="question-card">
+        <h1 class="question-text" id="questionText">¿Cuál es la comida favorita?</h1>
+      </div>
+
+      <div class="options-grid" id="optionsGrid">
+        <div class="option-btn opt-0">
+          <div class="option-shape"><div class="shape-triangle"></div></div>
+          <span class="option-text" id="optText0">Opción 1</span>
+        </div>
+        <div class="option-btn opt-1">
+          <div class="option-shape"><div class="shape-diamond"></div></div>
+          <span class="option-text" id="optText1">Opción 2</span>
+        </div>
+        <div class="option-btn opt-2">
+          <div class="option-shape"><div class="shape-circle"></div></div>
+          <span class="option-text" id="optText2">Opción 3</span>
+        </div>
+        <div class="option-btn opt-3">
+          <div class="option-shape"><div class="shape-square"></div></div>
+          <span class="option-text" id="optText3">Opción 4</span>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+        <button id="btnSkipQuestion" class="btn btn-secondary">Terminar tiempo ahora ⏱️</button>
+      </div>
+    </section>
+
+    <!-- 4. REVEAL VIEW (Estadísticas de respuestas) -->
+    <section id="viewReveal" class="question-stage" style="display: none;">
+      <div class="question-top-bar">
+        <div class="question-number-pill" id="revealQuestionPill">Resultados</div>
+        <div id="revealCelebrantBadge" class="celebrant-badge badge-p1">Cumpleañero 1</div>
+        <button id="btnProceedLeaderboard" class="btn btn-primary" style="font-size: 1.2rem;">
+          Ver Marcador ➡️
+        </button>
+      </div>
+
+      <div class="question-card">
+        <h2 class="question-text" id="revealQuestionText">¿Pregunta?</h2>
+      </div>
+
+      <div class="options-grid" id="revealOptionsGrid">
+        <!-- Opciones resaltadas -->
+      </div>
+
+      <div class="glass-card" style="margin-top: 1rem; padding: 1.5rem;">
+        <h3 style="margin-bottom: 1rem; font-family: var(--font-display);">Distribución de respuestas:</h3>
+        <div class="reveal-stats-bar" id="statsBarContainer">
+          <!-- Barras de porcentaje -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. LEADERBOARD VIEW -->
+    <section id="viewLeaderboard" class="leaderboard-container glass-card" style="display: none;">
+      <h2 class="leaderboard-title">🏆 Tabla de Posiciones</h2>
+      <div class="leaderboard-list" id="leaderboardList">
+        <!-- Top 5 posiciones -->
+      </div>
+      <div style="display: flex; justify-content: center; margin-top: 1.5rem;">
+        <button id="btnNextFromLeaderboard" class="btn btn-primary" style="font-size: 1.3rem; padding: 0.9rem 2.5rem;">
+          Siguiente Pregunta ➡️
+        </button>
+      </div>
+    </section>
+
+    <!-- 6. FINAL PODIUM VIEW -->
+    <section id="viewPodium" class="podium-section glass-card" style="display: none;">
+      <h1 class="leaderboard-title" style="font-size: 3rem;">🎉 ¡PODIO DE LA FIESTA! 🎉</h1>
+      <p style="color: var(--text-muted); font-size: 1.2rem;">Los que más conocen a los cumpleañeros:</p>
+
+      <div class="podium-stage" id="podiumStage">
+        <!-- Columnas 2do, 1er, 3er lugar -->
+      </div>
+
+      <!-- Premios especiales por cumpleañero -->
+      <div class="special-awards-grid" id="specialAwardsGrid">
+        <div class="award-card award-p1">
+          <div class="award-icon">👑</div>
+          <div>
+            <div class="award-title" id="awardTitleP1">Máster de Cumpleañero 1</div>
+            <div class="award-winner" id="awardWinnerP1">Cargando...</div>
+          </div>
+        </div>
+        <div class="award-card award-p2">
+          <div class="award-icon">👑</div>
+          <div>
+            <div class="award-title" id="awardTitleP2">Máster de Cumpleañero 2</div>
+            <div class="award-winner" id="awardWinnerP2">Cargando...</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+        <button id="btnPodiumViewScores" class="btn btn-secondary">📋 Ver Tabla Detallada de Todos</button>
+        <button id="btnRestartGame" class="btn btn-primary">🔄 Reiniciar Trivia</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL: PREGUNTAS Y CONFIGURACIÓN -->
+  <div id="modalSettings" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 style="font-family: var(--font-display);">⚙️ Configuración y Editor de Preguntas</h2>
+        <button id="btnCloseSettings" class="btn-icon">✕</button>
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña de Admin (para guardar):</label>
+        <input type="password" id="inputAdminPass" class="input-control" value="admin" style="text-align: left;">
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label>Nombre del Cumpleañero/a 1:</label>
+          <input type="text" id="inputCelebrant1" class="input-control" value="Cumpleañero 1" style="text-align: left;">
+        </div>
+        <div class="form-group">
+          <label>Nombre del Cumpleañero/a 2:</label>
+          <input type="text" id="inputCelebrant2" class="input-control" value="Cumpleañero 2" style="text-align: left;">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>PIN de la sala:</label>
+        <input type="text" id="inputRoomPin" class="input-control" value="2026" style="width: 200px;">
+      </div>
+
+      <hr style="border-color: rgba(255,255,255,0.1); margin: 0.5rem 0;">
+
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-family: var(--font-display);">Lista de Preguntas (<span id="modalQuestionCount">0</span>)</h3>
+        <button id="btnAddQuestion" class="btn btn-secondary">+ Agregar Pregunta</button>
+      </div>
+
+      <div id="questionsEditorList" style="display: flex; flex-direction: column; gap: 1rem; max-height: 380px; overflow-y: auto; padding-right: 0.5rem;">
+        <!-- Elementos de preguntas editables -->
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+        <button id="btnCancelSettings" class="btn btn-secondary">Cancelar</button>
+        <button id="btnSaveSettings" class="btn btn-primary">💾 Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TABLA COMPLETA DE PUNTAJES (ADMIN) -->
+  <div id="modalScores" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 style="font-family: var(--font-display);">📊 Tabla Completa de Resultados</h2>
+        <button id="btnCloseScores" class="btn-icon">✕</button>
+      </div>
+
+      <p style="color: var(--text-muted);">
+        Aquí puedes ver con exactitud cuántos puntos acumuló cada invitado y a cuál cumpleañero conoce más.
+      </p>
+
+      <div class="scores-table-container">
+        <table class="scores-table">
+          <thead>
+            <tr>
+              <th># Pos</th>
+              <th>Invitado</th>
+              <th>Puntos Totales</th>
+              <th>Aciertos</th>
+              <th>Errores</th>
+              <th id="thScoreP1">Pts Cumple 1</th>
+              <th id="thScoreP2">Pts Cumple 2</th>
+              <th>Pts Ambos</th>
+            </tr>
+          </thead>
+          <tbody id="scoresTableBody">
+            <!-- Filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+        <button id="btnExportCSV" class="btn btn-secondary">📥 Descargar CSV / Excel</button>
+        <button id="btnCloseScoresBtn" class="btn btn-primary">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="sound.js"></script>
+  <script src="confetti.js"></script>
+  <script src="host.js"></script>
+</body>
+</html>

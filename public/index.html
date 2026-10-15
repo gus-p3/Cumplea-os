@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Kahoot Cumpleaños | Jugar</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <!-- Ambient background glow -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="container player-view">
+    <!-- Header -->
+    <header class="app-header" style="justify-content: center;">
+      <div class="brand-logo" style="font-size: 1.4rem;">
+        <span class="logo-badge">🎂 KAHOOT!</span>
+        <span id="playerAppTitle">Trivia Cumple</span>
+      </div>
+    </header>
+
+    <!-- 1. JOIN VIEW -->
+    <section id="playerJoinView" class="glass-card join-card">
+      <div style="text-align: center;">
+        <h2 style="font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 0.3rem;">¡Únete a la Fiesta!</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">¿Qué tanto conoces a los cumpleañeros?</p>
+      </div>
+
+      <div class="form-group">
+        <label for="inputPin">PIN del Juego:</label>
+        <input type="text" id="inputPin" class="input-control" placeholder="Ej. 2026" maxlength="8" inputmode="numeric">
+      </div>
+
+      <div class="form-group">
+        <label for="inputNickname">Tu Nombre o Apodo:</label>
+        <input type="text" id="inputNickname" class="input-control" placeholder="Escribe tu apodo..." maxlength="20">
+      </div>
+
+      <div class="form-group">
+        <label>Elige tu Avatar:</label>
+        <div class="avatar-selector" id="avatarSelector">
+          <!-- Avatares seleccionables -->
+        </div>
+      </div>
+
+      <div id="joinErrorMessage" style="color: #ff4d6d; text-align: center; font-weight: bold; font-size: 0.95rem; display: none;"></div>
+
+      <button id="btnJoin" class="btn btn-primary" style="font-size: 1.25rem; padding: 1rem;">
+        🚀 ¡ENTRAR A JUGAR!
+      </button>
+    </section>
+
+    <!-- 2. WAITING LOBBY VIEW -->
+    <section id="playerWaitingView" class="glass-card player-feedback-card feedback-waiting" style="display: none;">
+      <div id="playerAvatarDisplay" style="font-size: 4.5rem;">🎉</div>
+      <h2 id="playerNameDisplay" style="font-family: var(--font-display); font-size: 2rem;">¡Hola!</h2>
+      <p style="font-size: 1.15rem; font-weight: 600;">Ya estás en la sala de juego.</p>
+      <div style="margin-top: 1rem; padding: 0.8rem 1.5rem; background: rgba(0,0,0,0.25); border-radius: 20px;">
+        👀 Mira la pantalla principal... ¡El anfitrión iniciará pronto!
+      </div>
+    </section>
+
+    <!-- 3. INTRO COUNTDOWN VIEW -->
+    <section id="playerIntroView" class="glass-card" style="display: none; text-align: center; margin: auto 0; padding: 2.5rem 1.5rem;">
+      <div id="playerIntroBadge" class="celebrant-badge badge-both" style="margin-bottom: 1rem;">
+        ¿Quién conoce más a...?
+      </div>
+      <h2 id="playerIntroQuestionTitle" style="font-family: var(--font-display); font-size: 2rem; margin-bottom: 0.5rem;">
+        Pregunta en camino...
+      </h2>
+      <p style="color: var(--text-muted);">¡Dedo listo en la pantalla!</p>
+    </section>
+
+    <!-- 4. ACTIVE QUESTION VIEW (4 Big Kahoot Tap Buttons) -->
+    <section id="playerQuestionView" style="display: none; flex-direction: column; flex: 1;">
+      <!-- Mini cabecera con temporizador y pregunta en el móvil -->
+      <div class="glass-card" style="padding: 1rem 1.2rem; margin-bottom: 0.8rem; text-align: center;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <span id="playerQuestionNumberPill" style="font-weight: 800; font-size: 0.95rem;">Pregunta 1/10</span>
+          <div class="timer-circle" id="playerTimerCircle" style="width: 48px; height: 48px; font-size: 1.4rem; border-width: 3px;">20</div>
+        </div>
+        <h3 id="playerQuestionTextMobile" style="font-size: 1.2rem; font-family: var(--font-display); line-height: 1.3;">
+          ¿Pregunta?
+        </h3>
+      </div>
+
+      <!-- Los 4 botones gigantes táctiles -->
+      <div class="mobile-tap-grid" id="mobileTapGrid">
+        <button class="mobile-tap-btn opt-0" onclick="submitAnswer(0)">
+          <div class="shape-triangle"></div>
+          <span class="btn-text-preview" id="mOptText0">Opción 1</span>
+        </button>
+        <button class="mobile-tap-btn opt-1" onclick="submitAnswer(1)">
+          <div class="shape-diamond"></div>
+          <span class="btn-text-preview" id="mOptText1">Opción 2</span>
+        </button>
+        <button class="mobile-tap-btn opt-2" onclick="submitAnswer(2)">
+          <div class="shape-circle"></div>
+          <span class="btn-text-preview" id="mOptText2">Opción 3</span>
+        </button>
+        <button class="mobile-tap-btn opt-3" onclick="submitAnswer(3)">
+          <div class="shape-square"></div>
+          <span class="btn-text-preview" id="mOptText3">Opción 4</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 5. ANSWER SUBMITTED WAITING VIEW -->
+    <section id="playerAnswerSubmittedView" class="glass-card player-feedback-card feedback-waiting" style="display: none;">
+      <div style="font-size: 4rem;">⚡</div>
+      <h2 style="font-family: var(--font-display); font-size: 1.8rem;">¡Respuesta enviada!</h2>
+      <p style="font-size: 1.1rem;">Esperando a que termine el tiempo...</p>
+    </section>
+
+    <!-- 6. ROUND RESULT VIEW (Feedback al jugador) -->
+    <section id="playerResultView" class="glass-card player-feedback-card" style="display: none;">
+      <div id="resultIcon" style="font-size: 4.5rem;">🎯</div>
+      <h2 id="resultTitle" style="font-family: var(--font-display); font-size: 2.2rem;">¡CORRECTO!</h2>
+      <div id="resultPoints" style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 900; color: #ffd700;">
+        +950 pts
+      </div>
+      <div id="resultStreak" style="font-weight: 700; font-size: 1.1rem; color: #ff5722;">
+        🔥 Racha: x2
+      </div>
+      <div style="margin-top: 1rem; font-size: 1.1rem; color: #fff;">
+        Puntaje total: <strong id="resultTotalScore">0</strong> pts
+      </div>
+    </section>
+
+    <!-- 7. LEADERBOARD INTERIM VIEW -->
+    <section id="playerLeaderboardView" class="glass-card" style="display: none; text-align: center; margin: auto 0; padding: 2.5rem 1.5rem;">
+      <h2 style="font-family: var(--font-display); font-size: 1.8rem; margin-bottom: 1rem;">🏆 Marcador</h2>
+      <p style="font-size: 1.2rem; margin-bottom: 1rem;">¡Mira la pantalla grande para ver quién va ganando!</p>
+      <div style="font-size: 1.1rem; color: #ffd700; font-weight: bold;">
+        Tu Puntaje: <span id="playerScoreInterim">0</span> pts
+      </div>
+    </section>
+
+    <!-- 8. FINAL GAME OVER / PODIUM VIEW -->
+    <section id="playerGameOverView" class="glass-card" style="display: none; text-align: center; margin: auto 0; padding: 2.5rem 1.5rem;">
+      <div style="font-size: 4rem;">🎉</div>
+      <h2 style="font-family: var(--font-display); font-size: 2.2rem; margin-bottom: 0.5rem;">¡Juego Terminado!</h2>
+      <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        ¡Gracias por celebrar el cumpleaños con nosotros!
+      </p>
+      <div id="playerFinalScoreCard" style="background: rgba(255,255,255,0.1); border-radius: 18px; padding: 1.5rem;">
+        <div style="font-size: 1rem; color: var(--text-muted);">Tu resultado final:</div>
+        <div id="playerFinalPoints" style="font-size: 2.5rem; font-weight: 900; color: #ffd700; font-family: var(--font-display);">
+          0 pts
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="sound.js"></script>
+  <script src="confetti.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
